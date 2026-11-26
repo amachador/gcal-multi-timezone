@@ -4,12 +4,6 @@ A Chrome extension that adds extra timezone columns to the left of the Google Ca
 time grid (Day / Week views), laid out like Notion Calendar. Your calendar's own timezone
 column stays Google's.
 
-```
- PST   CST   EST  │ MVD
-20:00 22:00 23:00 │ 01:00
-21:00 23:00 00:00 │ 02:00
-```
-
 ## Screenshots
 
 *(Rendered from `test/demo.html` with made-up events, running the real extension script.)*
