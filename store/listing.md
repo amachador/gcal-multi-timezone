@@ -23,14 +23,15 @@ World Time adds extra timezone columns to the left of the Google Calendar time g
 • A heads-up in the popup if Google Calendar is set to a different timezone than the one the extension assumes, with one-click suggestions
 • 12 or 24-hour clock, light and dark mode, works on Day and Week views
 
-Private by design: World Time does not collect, store or send your calendar data. Your settings stay in your browser profile. It only runs on calendar.google.com.
+Private by design: World Time does not collect or send any calendar data. It only reads the page you are looking at to line its columns up, and it only runs on calendar.google.com. Your timezone choices are saved in your Chrome profile (and sync through Chrome sync if you use it).
 
 World Time for Google Calendar is an independent extension and is not affiliated with or endorsed by Google.
 
-**Screenshots** (640x400, in this folder, upload in this order):
+**Screenshots** (640x400 PNG, in this folder, upload in this order; the store allows up to 5):
 1. `screenshot-1-hover.png`: hover a row to compare one hour across timezones
 2. `screenshot-2-dst-midweek.png`: daylight saving change inside the week
 3. `screenshot-3-dst-next-week.png`: "next week" heads-up at the edge of the week before a change
+4. `screenshot-4-settings.png`: the popup, where you add timezones and set preferences
 
 **Icon:** 128x128 `icons/icon128.png` (already inside the package).
 Heads-up: the current icon uses the shape of Google's Calendar logo. The store's branding and impersonation rules can reject icons that resemble a Google product, so if the review flags it, swap in an original icon (`icons/source.svg` + `./make_icons.py`) and resubmit.

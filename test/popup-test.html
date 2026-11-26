@@ -57,7 +57,9 @@
   <p class="muted foot">Columns appear left of the time grid on the Day and Week views. Reload Calendar tabs after installing.</p>
 
   <script>
-window.__status = {home:'America/Montevideo', tzCheck:{status:'mismatch', diffMin:-300, home:'America/Montevideo', at:Date.now()}};
+window.__status = new URLSearchParams(location.search).get('chip') === '0'
+  ? {home:'America/Montevideo', tzCheck:{status:'match', diffMin:0, home:'America/Montevideo', at:Date.now()}}
+  : {home:'America/Montevideo', tzCheck:{status:'mismatch', diffMin:-300, home:'America/Montevideo', at:Date.now()}};
 window.__saved = null;
 window.chrome={
   storage:{sync:{get:(d,cb)=>cb(Object.assign({},d,{zones:[{tz:'America/Los_Angeles',label:''},{tz:'America/Chicago',label:''},{tz:'America/New_York',label:''}]})),set:o=>{window.__saved=o}}},
