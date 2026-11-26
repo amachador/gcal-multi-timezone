@@ -55,7 +55,7 @@ Show additional timezone columns next to the time grid in Google Calendar so use
 - It does not collect personally identifiable information, health, financial, authentication, location or communications data, web history or user activity.
 - Certify: data is not sold, not used for unrelated purposes, and not used for creditworthiness or lending.
 
-**Privacy policy URL:** not required when no user data is collected or transmitted. If the dashboard insists, host a one-paragraph policy (a GitHub Pages page or a public gist) that says: "World Time for Google Calendar does not collect, transmit or share any user data. Settings are stored in your browser via chrome.storage.sync."
+**Privacy policy URL:** https://github.com/amachador/gcal-multi-timezone/blob/main/PRIVACY.md (the repo must be public for the store to open it; the policy text is in `PRIVACY.md`).
 
 ## Before you submit
 
