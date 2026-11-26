@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "World Time for Google Calendar",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "See several timezones beside the Google Calendar time grid. Hover to compare hours and get daylight saving notices.",
   "permissions": ["storage"],
   "action": {
