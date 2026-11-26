@@ -33,6 +33,7 @@ World Time for Google Calendar is an independent extension and is not affiliated
 3. `screenshot-3-dst-next-week.png`: "next week" heads-up at the edge of the week before a change
 
 **Icon:** 128x128 `icons/icon128.png` (already inside the package).
+Heads-up: the current icon uses the shape of Google's Calendar logo. The store's branding and impersonation rules can reject icons that resemble a Google product, so if the review flags it, swap in an original icon (`icons/source.svg` + `./make_icons.py`) and resubmit.
 
 Optional, not prepared: small promo tile (440x280) and marquee (1400x560).
 

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 859.0954"><defs>
+    <linearGradient
+       id="gcb"
+       x1="83"
+       x2="83"
+       y1="76"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         stop-color="#4fa0ff" />
+      <stop
+         offset="1"
+         stop-color="#3186ff" />
+    </linearGradient>
+    <linearGradient
+       id="gcd"
+       x1="89.059998"
+       x2="89.059998"
+       y1="21.75"
+       y2="96.389999"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         stop-color="#a9a8ff" />
+      <stop
+         offset=".8"
+         stop-color="#3c90ff" />
+    </linearGradient>
+    <filter
+       id="gce"
+       width="152"
+       height="112"
+       x="20"
+       y="-4"
+       color-interpolation-filters="sRGB"
+       filterUnits="userSpaceOnUse">
+      <feFlood
+         flood-opacity="0"
+         result="BackgroundImageFix" />
+      <feBlend
+         in="SourceGraphic"
+         in2="BackgroundImageFix"
+         result="shape"
+         mode="normal" />
+      <feGaussianBlur
+         result="effect1_foregroundBlur_37330_7673"
+         stdDeviation="6" />
+    </filter>
+  </defs><path fill="#bbe2ff" d="M 64.743253,150.86554 C 64.743253,67.543758 132.28701,0 215.60879,0 h 368.78242 c 83.32178,0 150.86554,67.543758 150.86554,150.86554 v 159.24695 c 0,83.32178 -67.54376,150.86554 -150.86554,150.86554 H 215.60879 c -83.32178,0 -150.865537,-67.54376 -150.865537,-150.86554 z"/><path fill="#3c90ff" d="M 1.1859076,216.8273 C -9.5475474,135.25514 53.952176,62.86064 136.22104,62.86064 h 527.55792 c 82.2741,0 145.76859,72.3945 135.03513,153.96666 l -32.12702,244.15073 32.12702,244.15072 c 10.73346,81.57216 -52.76103,153.96666 -135.03513,153.96666 H 136.22104 c -82.274102,0 -145.7685874,-72.3945 -135.0351324,-153.96666 L 33.312933,460.97803 Z"/><mask
+     id="gca"
+     width="154"
+     height="152"
+     x="19"
+     y="20"
+     maskUnits="userSpaceOnUse">
+    <path
+       fill="#3c90ff"
+       d="M 19.867,49.392 C 17.818,33.82 29.94,20 45.645,20 h 100.71 c 15.706,0 27.827,13.82 25.778,29.392 L 166,96 l 6.133,46.608 C 174.182,158.18 162.061,172 146.355,172 H 45.645 C 29.939,172 17.818,158.18 19.867,142.608 L 26,96 Z" />
+  </mask><g
+     mask="url(#gca)"
+     transform="matrix(5.2383867,0,0,5.2383867,-102.88512,-41.907093)">
+    <path
+       fill="url(#gcb)"
+       d="M 0,0 H 166 V 76 H 0 Z"
+       transform="matrix(1,0,0,-1,13,172)"
+       style="fill:url(#gcb)" />
+  </g><mask
+     id="gcc"
+     width="154"
+     height="152"
+     x="19"
+     y="20"
+     maskUnits="userSpaceOnUse">
+    <path
+       fill="#3186ff"
+       d="M 19.867,49.392 C 17.818,33.82 29.94,20 45.645,20 h 100.71 c 15.706,0 27.827,13.82 25.778,29.392 L 166,96 l 6.133,46.608 C 174.182,158.18 162.061,172 146.355,172 H 45.645 C 29.939,172 17.818,158.18 19.867,142.608 L 26,96 Z" />
+  </mask><g
+     mask="url(#gcc)"
+     transform="matrix(5.2383867,0,0,5.2383867,-102.88512,-41.907093)">
+    <path
+       fill="url(#gcd)"
+       d="M 32,27.2 C 32,16.596 40.596,8 51.2,8 h 89.6 C 151.404,8 160,16.596 160,27.2 V 96 H 32 Z"
+       filter="url(#gce)"
+       style="fill:url(#gcd)" />
+  </g><g stroke="#ffffff" fill="none" stroke-linecap="round"><circle cx="400" cy="461" r="225.0" stroke-width="39.0"/><line x1="400" y1="461" x2="296.1" y2="401.0" stroke-width="33.0"/><line x1="400" y1="461" x2="545.5" y2="377.0" stroke-width="33.0"/></g><circle cx="400" cy="461" r="22.5" fill="#ffffff"/></svg>

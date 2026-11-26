@@ -95,4 +95,5 @@ listing text, permission justifications and privacy disclosures to paste into th
 - `test/popup-test.html` renders the real popup with a faked `chrome.*` API (same server, `/test/popup-test.html`).
 - `test/mock2.html` is a stand-in page for exercising the content script without Google Calendar
   (serve the folder with `python3 -m http.server` and open `/test/mock2.html`).
-- `make_icons.py` regenerates the icons (standard library only).
+- `make_icons.py` regenerates `icons/icon{16,32,48,128}.png` from `icons/source.svg` (macOS only: it uses
+  Quick Look and `sips`, rendering on black and on white to recover true transparency).
