@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>World Time demo</title>
+<link rel="stylesheet" href="/content.css">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { display: flex; background: #1b1b1c; color: #e3e3e3; font: 12px/1.35 "Google Sans", Roboto, -apple-system, "Segoe UI", sans-serif; overflow: hidden; }
+  body.compact #side { display: none; }
+  body.compact .right { padding-left: 12px; }
+  #side { width: 232px; flex: none; padding: 14px 16px; }
+  .create { display: inline-flex; align-items: center; gap: 10px; background: #2b3a55; color: #c2d7ff; border-radius: 16px; padding: 14px 20px 14px 16px; font-size: 14px; font-weight: 500; margin-bottom: 18px; }
+  .mini h4 { margin: 0 0 8px; font-size: 13px; font-weight: 500; }
+  .mini .g { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px 0; text-align: center; font-size: 11px; color: #c4c7c5; }
+  .mini .g span { padding: 4px 0; border-radius: 50%; }
+  .mini .g .d { color: #8e918f; }
+  .mini .g .t { background: #8ab4f8; color: #1b1b1c; font-weight: 500; }
+  .cals { margin-top: 22px; display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
+  .cals div { display: flex; align-items: center; gap: 12px; }
+  .cals i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+  .right { flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 8px 12px 10px 0; }
+  .top { height: 48px; display: flex; align-items: center; gap: 14px; font-size: 14px; }
+  .top .btn { border: 1px solid #5c5f5e; border-radius: 18px; padding: 8px 16px; }
+  .top .title { font-size: 22px; margin-left: 6px; }
+  .top .sp { flex: 1; }
+  .top .view { border: 1px solid #5c5f5e; border-radius: 18px; padding: 8px 14px; }
+  [role=main] { flex: 1; min-height: 0; display: flex; flex-direction: column; background: #131314; border-radius: 16px; overflow: hidden; }
+  .hdr { height: 74px; position: relative; display: flex; flex: none; }
+  .hdr .cap { position: absolute; left: 0; width: 56px; bottom: 8px; text-align: center; font-size: 10px; color: #9aa0a6; }
+  .days { display: flex; margin-left: 56px; flex: 1; }
+  .day { flex: 1; text-align: center; padding-top: 10px; border-left: 1px solid #2f3032; }
+  .dow { display: block; font-size: 11px; letter-spacing: .06em; color: #9aa0a6; }
+  .num { display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; border-radius: 50%; font-size: 22px; margin-top: 2px; }
+  .num.today { background: #8ab4f8; color: #1b1b1c; }
+  .allday { height: 30px; display: flex; flex: none; padding-left: 56px; }
+  .allday div { flex: 1; padding: 2px 3px; border-left: 1px solid #2f3032; }
+  .allday span { display: block; background: #4d5560; border-radius: 6px; padding: 2px 6px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .body { flex: 1; min-height: 0; display: flex; border-top: 1px solid #2f3032; }
+  .gw { width: 56px; flex: none; overflow: hidden; position: relative; }
+  .g2 { position: absolute; left: 0; right: 0; top: 0; }
+  .g2 span { position: absolute; right: 8px; font-size: 10px; color: #9aa0a6; transform: translateY(-50%); }
+  .scroll { flex: 1; overflow-y: scroll; position: relative; scrollbar-width: none; }
+  .grid { position: relative; display: flex; }
+  .col { flex: 1; position: relative; border-left: 1px solid #2f3032; }
+  .col .ev { position: absolute; left: 2px; right: 6px; border-radius: 6px; padding: 3px 6px; font-size: 11px; overflow: hidden; color: #fff; }
+  .hl { position: absolute; left: 0; right: 0; height: 1px; background: #2f3032; }
+  .now { position: absolute; left: 0; right: 0; height: 2px; background: #ea4335; }
+</style>
+</head>
+<body>
+<div id="side">
+  <div class="create">+ Create</div>
+  <div class="mini"><h4>Oct – Nov 2026</h4><div class="g" id="mini"></div></div>
+  <div class="cals">
+    <div><i style="background:#8ab4f8"></i>Work</div>
+    <div><i style="background:#81c995"></i>Personal</div>
+    <div><i style="background:#f28b82"></i>Reminders</div>
+  </div>
+</div>
+<div class="right">
+  <div class="top"><span class="btn">Today</span><span>&lsaquo; &nbsp; &rsaquo;</span><span class="title" id="title"></span><span class="sp"></span><span class="view">Week &#9662;</span></div>
+  <div role="main">
+    <div class="hdr"><div class="cap">GMT-3</div><div class="days" id="days"></div></div>
+    <div class="allday" id="allday"></div>
+    <div class="body">
+      <div class="gw"><div class="g2" id="g2"></div></div>
+      <div class="scroll" id="sc"><div class="grid" id="grid"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const q = new URLSearchParams(location.search);
+const scenario = q.get('s') || 'hover';
+if (q.get('compact')) document.body.classList.add('compact');
+const HOUR = 46;
+
+const SCEN = {
+  hover: { path: '/calendar/u/0/r/week/2026/11/26', dow: ['MON','TUE','WED','THU','FRI','SAT','SUN'], nums: [23,24,25,26,27,28,29], today: 3, title: 'November 2026',
+           zones: ['America/Los_Angeles','America/New_York','Europe/London','Asia/Tokyo'], now: true },
+  dst:   { path: '/calendar/u/0/r/week/2026/10/28', dow: ['MON','TUE','WED','THU','FRI','SAT','SUN'], nums: [26,27,28,29,30,31,1], today: -1, title: 'Oct – Nov 2026',
+           zones: ['America/Los_Angeles','America/Chicago','America/New_York'], now: false },
+  next:  { path: '/calendar/u/0/r/week/2026/10/28', dow: ['SUN','MON','TUE','WED','THU','FRI','SAT'], nums: [25,26,27,28,29,30,31], today: -1, title: 'October 2026',
+           zones: ['America/Los_Angeles','America/Chicago','America/New_York'], now: false },
+}[scenario];
+
+history.replaceState(null, '', SCEN.path);
+document.getElementById('title').textContent = SCEN.title;
+
+const mini = document.getElementById('mini');
+['M','T','W','T','F','S','S'].forEach(d => { const s = document.createElement('span'); s.textContent = d; mini.appendChild(s); });
+for (let i = 0; i < 35; i++) { const s = document.createElement('span'); const n = ((i + 26 - 1) % 31) + 1; s.textContent = n; if (i < 6) s.className = 'd'; if (n === SCEN.nums[SCEN.today >= 0 ? SCEN.today : 0] && i > 5) s.className = 't'; mini.appendChild(s); }
+
+const days = document.getElementById('days'), allday = document.getElementById('allday'), grid = document.getElementById('grid'), g2 = document.getElementById('g2');
+SCEN.dow.forEach((d, i) => {
+  const el = document.createElement('div'); el.className = 'day';
+  el.innerHTML = '<span class="dow">' + d + '</span><span class="num' + (i === SCEN.today ? ' today' : '') + '">' + SCEN.nums[i] + '</span>';
+  days.appendChild(el);
+  const a = document.createElement('div'); allday.appendChild(a);
+  if (i === 2) a.innerHTML = '<span>Product offsite</span>';
+  if (i === 4) a.innerHTML = '<span style="background:#3f6b52">Public holiday</span>';
+});
+
+for (let h = 1; h < 24; h++) { const s = document.createElement('span'); s.style.top = (h * HOUR) + 'px'; s.textContent = String(h).padStart(2, '0') + ':00'; g2.appendChild(s); }
+g2.style.height = (24 * HOUR) + 'px';
+grid.style.height = (24 * HOUR) + 'px';
+
+const C = { blue: '#4a6fb0', green: '#3f8a63', purple: '#7a5fb0', red: '#b5574f', teal: '#2f8a95' };
+const EV = [ // day, start h, length h, title, color
+  [0, 9, 1, 'Weekly sync', 'blue'], [0, 14, 1.5, 'Design review', 'purple'],
+  [1, 10.5, 1, 'Customer call', 'green'], [1, 15, 1, '1:1', 'blue'],
+  [2, 9, 0.75, 'Standup', 'teal'], [2, 12, 1, 'Lunch', 'green'], [2, 16, 1.5, 'Planning', 'purple'],
+  [3, 11, 1.5, 'Roadmap workshop', 'red'], [3, 14.5, 1, 'Interview', 'blue'],
+  [4, 9.5, 1, 'Retro', 'teal'], [4, 13, 1.25, 'Demo prep', 'purple'],
+  [5, 10, 1, 'Run club', 'green'],
+];
+for (let d = 0; d < 7; d++) {
+  const col = document.createElement('div'); col.className = 'col';
+  for (let h = 1; h < 24; h++) { const l = document.createElement('div'); l.className = 'hl'; l.style.top = (h * HOUR) + 'px'; col.appendChild(l); }
+  EV.filter(e => e[0] === d).forEach(e => {
+    const ev = document.createElement('div'); ev.className = 'ev'; ev.style.top = (e[1] * HOUR + 1) + 'px'; ev.style.height = (e[2] * HOUR - 2) + 'px'; ev.style.background = C[e[4]];
+    ev.innerHTML = e[3]; col.appendChild(ev);
+  });
+  if (SCEN.now && d === SCEN.today) { const n = document.createElement('div'); n.className = 'now'; const t = new Date(); n.style.top = ((t.getHours() + t.getMinutes() / 60) * HOUR) + 'px'; col.appendChild(n); }
+  grid.appendChild(col);
+}
+
+const sc = document.getElementById('sc');
+sc.scrollTop = 6.6 * HOUR;
+g2.style.transform = 'translateY(' + (-sc.scrollTop) + 'px)';
+sc.addEventListener('scroll', () => { g2.style.transform = 'translateY(' + (-sc.scrollTop) + 'px)'; });
+
+localStorage.removeItem('gtz');
+window.chrome = {
+  storage: { sync: { get: (d, cb) => cb(Object.assign({}, d, { zones: SCEN.zones.map(tz => ({ tz, label: '' })) })), set() {} }, onChanged: { addListener() {} } },
+  runtime: { onMessage: { addListener() {} } },
+};
+
+if (scenario === 'hover') {
+  setTimeout(() => {
+    const label = [...document.querySelectorAll('#g2 span')].find(s => s.textContent === '11:00');
+    const cell = document.querySelector('#gtz-root .gtz-cell');
+    if (!label || !cell) return;
+    const lr = label.getBoundingClientRect(), cr = cell.getBoundingClientRect();
+    document.dispatchEvent(new MouseEvent('mousemove', { clientX: cr.left + cr.width * 1.6, clientY: lr.top + lr.height / 2, bubbles: true }));
+  }, 2500);
+}
+</script>
+<script src="/content.js"></script>
+</body>
+</html>

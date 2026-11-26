@@ -10,6 +10,33 @@ column stays Google's.
 21:00 23:00 00:00 │ 02:00
 ```
 
+## Screenshots
+
+*(Rendered from `test/demo.html` with made-up events, running the real extension script.)*
+
+### Row hover
+
+Hover any row in the extra columns: that hour lights up across every timezone, including Google's own
+column, and the other rows fade back, so you can read one moment across the world at a glance.
+
+![Hovering the 11:00 row highlights 06:00 PST, 09:00 EST, 14:00 GMT and 23:00 JST while the other rows fade](docs/hover.jpg)
+
+### Daylight saving notices
+
+In a week where a clock changes, a dashed amber line marks the first day with the new offset, the chip
+says how much the affected zones shift (`-1h` here: US clocks go back on Sunday 1 Nov 2026), and the
+affected headings turn amber. The columns are exact for the days before the line; for the days after it,
+apply the chip's amount to the time shown (here, one hour earlier).
+
+![Week of 26 Oct: an amber dashed line before Sunday with a chip reading PDT, CDT, EDT: -1h](docs/dst-midweek.jpg)
+
+If the change lands on the day right after the visible week, the same flag appears at the right edge with
+a **NEXT WEEK** label, so you see it coming before you get there.
+
+![Week of 25 Oct: a NEXT WEEK chip and dashed line at the right edge](docs/dst-next-week.jpg)
+
+Turn these notices off with the **Daylight saving notices** switch in the popup.
+
 ## Features
 
 - **Any number of timezones**, reorderable, with editable headings (auto-abbreviated: PST/PDT, BST, JST …).
@@ -56,6 +83,8 @@ detection in `content.js` (`findLabels`, `findTzCaption`, `findDayHeaders`) easy
 
 ## Development
 
+- `test/demo.html` is the page the README screenshots come from: open `/test/demo.html?s=hover|dst|next&compact=1`
+  (viewport ~1024x640) with the folder served by `python3 -m http.server`. It uses made-up events.
 - `test/popup-test.html` renders the real popup with a faked `chrome.*` API (same server, `/test/popup-test.html`).
 - `test/mock2.html` is a stand-in page for exercising the content script without Google Calendar
   (serve the folder with `python3 -m http.server` and open `/test/mock2.html`).
