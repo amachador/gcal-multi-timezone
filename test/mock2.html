@@ -34,7 +34,7 @@
  sc.addEventListener('scroll',()=>{g.style.transform='translateY('+(-sc.scrollTop)+'px)'});
  sc.scrollTop=300;
  localStorage.removeItem('gtz'); const lsn=[];
- window.chrome={storage:{sync:{get:(d,cb)=>cb(Object.assign({},d,JSON.parse(localStorage.gtz||'{}'))),set:()=>{}},onChanged:{addListener:f=>lsn.push(f)}},runtime:{onMessage:{addListener(){}}}};
+ window.chrome={storage:{sync:{get:(d,cb)=>cb(Object.assign({},d,JSON.parse(localStorage.gtz||'{}'))),set:()=>{}},onChanged:{addListener:f=>lsn.push(f)}},runtime:{onMessage:{addListener:f=>{window.__msg=f}}}};
  window.__gtzSet=o=>{localStorage.gtz=JSON.stringify(Object.assign(JSON.parse(localStorage.gtz||'{}'),o));lsn.forEach(f=>f())};
 </script>
 <script src="/content.js"></script>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Timezones</title>
+  <link rel="stylesheet" href="../popup.css" />
+</head>
+<body>
+  <header>
+    <h1>Timezones</h1>
+    <label class="switch" title="Show timezone columns in Google Calendar">
+      <input type="checkbox" id="enabled" />
+      <span class="track"></span>
+    </label>
+  </header>
+
+  <div id="tzwarn" class="warn" role="status" hidden>
+    <p id="tzwarn-text"></p>
+    <div id="tzwarn-actions" class="warn-actions"></div>
+  </div>
+
+  <section>
+    <div class="row">
+      <label for="home">Calendar timezone</label>
+      <select id="home"></select>
+    </div>
+    <div class="row">
+      <label for="hour24">24-hour clock</label>
+      <label class="switch">
+        <input type="checkbox" id="hour24" />
+        <span class="track"></span>
+      </label>
+    </div>
+    <div class="row">
+      <label for="dst" title="Amber line and chip when a clock change falls in or right after the visible days">Daylight saving notices</label>
+      <label class="switch">
+        <input type="checkbox" id="dst" />
+        <span class="track"></span>
+      </label>
+    </div>
+  </section>
+
+  <section>
+    <h2>Extra columns</h2>
+    <ul id="zones"></ul>
+    <p id="empty" class="muted" hidden>No extra timezones yet.</p>
+
+    <form id="add">
+      <input id="tz-input" list="tz-list" placeholder="Add a city or timezone, e.g. London" autocomplete="off" spellcheck="false" />
+      <button type="submit">Add</button>
+    </form>
+    <p id="error" class="error" hidden></p>
+    <datalist id="tz-list"></datalist>
+  </section>
+
+  <p class="muted foot">Columns appear left of the time grid on the Day and Week views. Reload Calendar tabs after installing.</p>
+  <p class="foot"><button type="button" id="diag" class="link">Copy diagnostics</button> <span id="diag-msg" class="muted"></span></p>
+
+  <script>
+window.__status = {home:'America/Montevideo', tzCheck:{status:'mismatch', diffMin:-300, home:'America/Montevideo', at:Date.now()}};
+window.__saved = null;
+window.chrome={
+  storage:{sync:{get:(d,cb)=>cb(Object.assign({},d,{zones:[{tz:'America/Los_Angeles',label:''},{tz:'America/Chicago',label:''},{tz:'America/New_York',label:''}]})),set:o=>{window.__saved=o}}},
+  tabs:{query:async()=>[{id:1}],sendMessage:async()=>window.__status}
+};
+</script>
+<script src="../popup.js"></script>
+</body>
+</html>

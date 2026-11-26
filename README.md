@@ -21,6 +21,9 @@ column stays Google's.
   first affected day, with a chip like `PDT, CDT, EDT: -1h`, and the affected zone headings turn amber.
   When the change lands on the day right after the visible week, the same flag appears at the right
   edge with a "NEXT WEEK" eyebrow. Toggle it in the popup.
+- **Timezone mismatch warning:** the popup compares Google's red now-line with the clock in the timezone
+  the extension assumes. If your Google Calendar timezone differs from your computer's, a chip says so
+  and offers one-click fixes.
 - 12/24-hour clock, optional calendar-timezone override, enable/disable switch.
 
 ## Install (unpacked)
@@ -42,7 +45,8 @@ the extra columns at exactly those positions. The calendar is shifted with a CSS
 - Calendar has one gutter per week, so a week that crosses a DST change shows the conversion in
   force at the start of the week; the amber line and chip mark where it changes.
 - "Calendar timezone: Auto" means your browser's timezone. If Google Calendar's own timezone setting
-  differs, pick the same one in the popup.
+  differs, the popup shows a warning chip (it needs today's red now-line on screen to check) with
+  suggested timezones; pick the right one there or in the dropdown.
 
 ## Troubleshooting
 
@@ -52,6 +56,7 @@ detection in `content.js` (`findLabels`, `findTzCaption`, `findDayHeaders`) easy
 
 ## Development
 
+- `test/popup-test.html` renders the real popup with a faked `chrome.*` API (same server, `/test/popup-test.html`).
 - `test/mock2.html` is a stand-in page for exercising the content script without Google Calendar
   (serve the folder with `python3 -m http.server` and open `/test/mock2.html`).
 - `make_icons.py` regenerates the icons (standard library only).

@@ -452,6 +452,7 @@
 
   const DAY_RE = /^(\d{1,2})(?:\s+\p{L}[\p{L}.]*)?$/u;
   let lastDays = null; // for diagnostics
+  let tzCheck = null; // { home, status: 'match'|'mismatch', diffMin, at } from the red now-line
 
   const addDays = (dt, n) => {
     const t = new Date(Date.UTC(dt.y, dt.m - 1, dt.d + n));
@@ -655,6 +656,7 @@
       spacing: found.spacing,
       tzNode,
       tzRetry: false,
+      firstHour: found.firstHour,
       dayNodes: dayHdr ? dayHdr.map((d) => d.node) : [],
       dayRetry: false,
       hotColor,
@@ -745,6 +747,19 @@
 
     const line = findNowLine(main);
     const lineRect = line ? line.getBoundingClientRect() : null;
+
+    // Is Google Calendar really in the timezone we assume? Today's red line sits at
+    // Google's current time; compare it with the clock in our "home" timezone.
+    if (lineRect && S.spacing > 0 && (!S.tzAt || performance.now() - S.tzAt > 1000)) {
+      S.tzAt = performance.now();
+      const homeNow = homeTz();
+      const p = partsOf(homeNow, Date.now());
+      const homeMin = p.hour * 60 + p.minute + p.second / 60;
+      const googleHours = S.firstHour + (lineRect.top + lineRect.height / 2 - cy[0]) / S.spacing;
+      let diff = (((googleHours * 60 - homeMin) % 1440) + 1440) % 1440;
+      if (diff > 720) diff -= 1440;
+      tzCheck = { home: homeNow, status: Math.abs(diff) < 22 ? 'match' : 'mismatch', diffMin: Math.round(diff / 15) * 15, at: Date.now() };
+    }
 
     // Marker lines sit on the left edge of the first day that has the new offset.
     let dstGeo = [];
@@ -983,6 +998,7 @@
       out.clip = S.clip.slice(0, 6).map(describe);
       out.firstLabel = describe(S.items[0].el);
       out.dstHints = settings.dstHints !== false;
+      out.tzCheck = tzCheck;
       out.captionCandidates = captionCandidates;
       out.days = lastDays;
       out.caption = S.tzNode ? { text: S.tzNode.nodeValue.trim(), ...describe(S.tzNode.parentElement) } : null;
@@ -995,6 +1011,11 @@
 
   try {
     chrome.runtime.onMessage.addListener((msg, sender, reply) => {
+      if (msg && msg.type === 'gtz-status') {
+        const home = homeTz();
+        reply({ home, tzCheck: tzCheck && tzCheck.home === home ? tzCheck : null });
+        return;
+      }
       if (msg && msg.type === 'gtz-diagnostics') {
         try {
           reply(diagnostics());

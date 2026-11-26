@@ -7,6 +7,9 @@
   --hover: #f4f4f2;
   --accent: #2383e2;
   --danger: #e5504a;
+  --warn-bg: #fff3d1;
+  --warn-fg: #7a5200;
+  --warn-line: #f0c75e;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -16,6 +19,9 @@
     --muted: #9b9a97;
     --line: #2e2e2e;
     --hover: #252525;
+    --warn-bg: #33290d;
+    --warn-fg: #fdd663;
+    --warn-line: #6b5518;
   }
 }
 
@@ -104,3 +110,23 @@ button.link:hover { background: none; filter: brightness(1.15); }
 .switch .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .15s; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
 .switch input:checked + .track { background: var(--accent); }
 .switch input:checked + .track::after { transform: translateX(14px); }
+
+.warn {
+  margin: 4px 0 10px;
+  padding: 9px 11px;
+  border: 1px solid var(--warn-line);
+  border-radius: 8px;
+  background: var(--warn-bg);
+  color: var(--warn-fg);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.warn p { margin: 0; }
+.warn-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.warn-actions button {
+  border-color: var(--warn-line);
+  color: var(--warn-fg);
+  padding: 2px 9px;
+  font-size: 12px;
+}
+.warn-actions button:hover { background: color-mix(in srgb, var(--warn-fg) 14%, transparent); }

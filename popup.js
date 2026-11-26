@@ -13,6 +13,15 @@ const DEFAULTS = {
 const $ = (id) => document.getElementById(id);
 const allZones = typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('timeZone') : [];
 if (!allZones.includes('UTC')) allZones.push('UTC');
+const POPULAR = [
+  'America/Los_Angeles', 'America/Denver', 'America/Chicago', 'America/New_York', 'America/Toronto',
+  'America/Mexico_City', 'America/Bogota', 'America/Lima', 'America/Santiago', 'America/Sao_Paulo',
+  'America/Argentina/Buenos_Aires', 'America/Montevideo', 'Europe/London', 'Europe/Madrid', 'Europe/Paris',
+  'Europe/Berlin', 'Europe/Rome', 'Europe/Athens', 'Europe/Istanbul', 'Europe/Moscow', 'Africa/Cairo',
+  'Africa/Johannesburg', 'Asia/Dubai', 'Asia/Kolkata', 'Asia/Bangkok', 'Asia/Singapore', 'Asia/Shanghai',
+  'Asia/Tokyo', 'Asia/Seoul', 'Australia/Sydney', 'Pacific/Auckland', 'UTC',
+];
+const LEGACY = new Set(['Asia/Calcutta', 'Asia/Katmandu', 'Asia/Saigon', 'Asia/Rangoon', 'Asia/Thimbu', 'Asia/Ulan_Bator', 'Asia/Dacca', 'Asia/Macao', 'Asia/Ujung_Pandang', 'America/Buenos_Aires', 'America/Indianapolis', 'America/Louisville', 'America/Godthab', 'Europe/Kiev', 'Pacific/Samoa']);
 const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 let settings = { ...DEFAULTS };
@@ -131,6 +140,63 @@ function showError(msg) {
   e.hidden = !msg;
 }
 
+// Offset (minutes) of a zone right now, from Intl's "GMT-03:00" style name.
+function offsetNow(tz) {
+  try {
+    const part = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'longOffset' })
+      .formatToParts(new Date())
+      .find((p) => p.type === 'timeZoneName');
+    const m = part && /GMT([+\-−])(\d{1,2})(?::(\d{2}))?/.exec(part.value);
+    if (!m) return 0; // plain "GMT"
+    return (m[1] === '+' ? 1 : -1) * (+m[2] * 60 + +(m[3] || 0));
+  } catch (e) {
+    return null;
+  }
+}
+
+const fmtSpan = (min) => {
+  const a = Math.abs(min);
+  return a % 60 === 0 ? `${a / 60}h` : `${Math.floor(a / 60)}h ${a % 60}m`.replace(/^0h /, '');
+};
+
+// Ask the open Calendar tab whether its clock matches the timezone we assume.
+async function checkCalendarTz() {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const st = await chrome.tabs.sendMessage(tab.id, { type: 'gtz-status' });
+    const c = st && st.tzCheck;
+    if (!c || c.status !== 'mismatch') return;
+
+    const target = offsetNow(st.home) + c.diffMin;
+    const mine = settings.zones.map((z) => z.tz).filter((tz) => offsetNow(tz) === target);
+    const known = POPULAR.filter((tz) => offsetNow(tz) === target);
+    const others = allZones.filter((tz) => !/^(Etc|Antarctica|SystemV|US\/|Canada\/)/.test(tz) && !LEGACY.has(tz) && offsetNow(tz) === target);
+    const picks = [...new Set([...mine, ...known, ...others])].slice(0, 3);
+
+    $('tzwarn-text').textContent =
+      `Google Calendar's clock looks ${fmtSpan(c.diffMin)} ${c.diffMin > 0 ? 'ahead of' : 'behind'} ${pretty(st.home)}, ` +
+      `so the extra columns may be off. Set your Calendar timezone:`;
+    const box = $('tzwarn-actions');
+    box.textContent = '';
+    picks.forEach((tz) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = pretty(tz.split('/').pop());
+      b.title = tz;
+      b.addEventListener('click', () => {
+        settings.home = tz;
+        save();
+        renderHomeSelect();
+        $('tzwarn').hidden = true;
+      });
+      box.appendChild(b);
+    });
+    $('tzwarn').hidden = false;
+  } catch (e) {
+    /* not a Calendar tab, or the page hasn't loaded the extension */
+  }
+}
+
 function init() {
   const dl = $('tz-list');
   for (const z of allZones) {
@@ -144,6 +210,7 @@ function init() {
   $('dst').checked = settings.dstHints !== false;
   renderHomeSelect();
   renderZones();
+  checkCalendarTz();
 
   $('enabled').addEventListener('change', (e) => {
     settings.enabled = e.target.checked;
