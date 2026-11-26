@@ -1,5 +1,5 @@
 /*
- * Multi Timezone for Google Calendar
+ * World Time for Google Calendar
  *
  * Google Calendar's class names are obfuscated and change often, so nothing
  * here depends on them. Instead we:
@@ -878,7 +878,7 @@
     try {
       track(false);
     } catch (e) {
-      console.warn('[Multi Timezone] track failed', e);
+      console.warn('[World Time] track failed', e);
     }
     // Still moving (an animation of any length)? Keep following it.
     if (S && S.moved) {
@@ -894,7 +894,7 @@
     try {
       track(false);
     } catch (e) {
-      console.warn('[Multi Timezone] track failed', e);
+      console.warn('[World Time] track failed', e);
     }
     kick(300);
   });
@@ -1046,7 +1046,7 @@
       try {
         update();
       } catch (e) {
-        console.warn('[Multi Timezone] update failed', e);
+        console.warn('[World Time] update failed', e);
       }
     }, delay);
   }
@@ -1058,7 +1058,7 @@
     try {
       update();
     } catch (e) {
-      console.warn('[Multi Timezone] rebuild failed', e);
+      console.warn('[World Time] rebuild failed', e);
     } finally {
       rebuilding = false;
     }

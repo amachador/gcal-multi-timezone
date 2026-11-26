@@ -1,4 +1,4 @@
-# Multi Timezone for Google Calendar
+# World Time for Google Calendar
 
 A Chrome extension that adds extra timezone columns to the left of the Google Calendar
 time grid (Day / Week views), laid out like Notion Calendar. Your calendar's own timezone

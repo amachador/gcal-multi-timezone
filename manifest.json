@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Multi Timezone for Google Calendar",
+  "name": "World Time for Google Calendar",
   "version": "1.0.0",
   "description": "Show several timezones next to the Google Calendar time grid, laid out like Notion Calendar.",
   "permissions": ["storage"],
   "action": {
-    "default_title": "Timezones",
+    "default_title": "World Time",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
