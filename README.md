@@ -81,6 +81,13 @@ If something is misaligned after a Google Calendar update, open the popup on a C
 **Copy diagnostics**. It copies page structure and positions only (no event data), which makes the
 detection in `content.js` (`findLabels`, `findTzCaption`, `findDayHeaders`) easy to adjust.
 
+## Publishing to the Chrome Web Store
+
+`./package.sh` builds `dist/world-time-for-google-calendar-<version>.zip` containing only the files the
+extension needs at runtime (the manifest, content script, popup and icons). `store/listing.md` has the
+listing text, permission justifications and privacy disclosures to paste into the developer dashboard, and
+`store/` holds the 640x400 screenshots. Bump `version` in `manifest.json` before each upload.
+
 ## Development
 
 - `test/demo.html` is the page the README screenshots come from: open `/test/demo.html?s=hover|dst|next&compact=1`

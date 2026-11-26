@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "World Time for Google Calendar",
   "version": "1.0.0",
-  "description": "Show several timezones next to the Google Calendar time grid, laid out like Notion Calendar.",
+  "description": "See several timezones beside the Google Calendar time grid. Hover to compare hours and get daylight saving notices.",
   "permissions": ["storage"],
   "action": {
     "default_title": "World Time",
