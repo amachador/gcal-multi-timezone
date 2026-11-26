@@ -28,7 +28,7 @@ Private by design: World Time does not collect or send any calendar data. It onl
 World Time for Google Calendar is an independent extension and is not affiliated with or endorsed by Google.
 
 **Screenshots** (640x400 PNG, in this folder, upload in this order; the store allows up to 5):
-1. `screenshot-1-hover.png`: hover a row to compare one hour across timezones
+1. `screenshot-1-hover.png`: hover a row to compare one hour across timezones, with the line across the grid
 2. `screenshot-2-dst-midweek.png`: daylight saving change inside the week
 3. `screenshot-3-dst-next-week.png`: "next week" heads-up at the edge of the week before a change
 4. `screenshot-4-settings.png`: the popup, where you add timezones and set preferences

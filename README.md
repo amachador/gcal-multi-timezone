@@ -20,7 +20,7 @@ Hover any row in the extra columns: that hour lights up across every timezone, i
 column, the other rows fade back, and a thin line marks that hour across the calendar grid (drawn on top of Google's own
 line, and switchable in the popup), so you can read one moment across the world at a glance.
 
-![Hovering the 11:00 row highlights 06:00 PST, 09:00 EST, 14:00 GMT and 23:00 JST while the other rows fade](docs/hover.jpg)
+![Hovering the 11:00 row highlights 06:00 PST, 09:00 EST, 14:00 GMT and 23:00 JST while the other rows fade and a line marks the 11:00 hour across the grid](docs/hover.jpg)
 
 ### Daylight saving notices
 
