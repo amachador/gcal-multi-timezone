@@ -17,7 +17,8 @@ column stays Google's.
 ### Row hover
 
 Hover any row in the extra columns: that hour lights up across every timezone, including Google's own
-column, and the other rows fade back, so you can read one moment across the world at a glance.
+column, the other rows fade back, and a thin line marks that hour across the calendar grid (drawn on top of Google's own
+line, and switchable in the popup), so you can read one moment across the world at a glance.
 
 ![Hovering the 11:00 row highlights 06:00 PST, 09:00 EST, 14:00 GMT and 23:00 JST while the other rows fade](docs/hover.jpg)
 

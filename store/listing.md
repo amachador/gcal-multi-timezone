@@ -17,7 +17,7 @@ World Time adds extra timezone columns to the left of the Google Calendar time g
 
 • Add as many timezones as you like, reorder them and rename the headings (PST, GMT, JST...)
 • Columns stay perfectly lined up with Google's own hour labels, through scrolling, the all-day row, sidebar changes and week navigation
-• Hover a row and that hour lights up across every timezone while the others fade
+• Hover a row and that hour lights up across every timezone while the others fade, with an optional thin line marking the hour across the calendar grid
 • A current-time marker follows Google's red "now" line
 • Daylight saving notices: when a clock changes during the week you are viewing, a dashed amber line marks the first affected day and a chip tells you how much the times shift (for example "PDT, CDT, EDT: -1h"). The same flag appears at the edge of the week before the change, labelled "NEXT WEEK". You can turn the notices off.
 • A heads-up in the popup if Google Calendar is set to a different timezone than the one the extension assumes, with one-click suggestions

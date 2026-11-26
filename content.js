@@ -21,6 +21,7 @@
     enabled: true,
     hour12: false,
     dstHints: true, // daylight-saving line, chip and amber headings
+    rowGuide: true, // line across the grid at the hovered hour
     home: 'auto', // 'auto' = browser timezone (what Google Calendar displays)
     zones: [
       { tz: 'America/Los_Angeles', label: '' },
@@ -410,7 +411,7 @@
     root = document.createElement('div');
     root.id = ROOT_ID;
     root.setAttribute('aria-hidden', 'true');
-    root.innerHTML = '<div class="gtz-cells"></div><div class="gtz-heads"></div><div class="gtz-dstl"></div>';
+    root.innerHTML = '<div class="gtz-cells"></div><div class="gtz-heads"></div><div class="gtz-dstl"></div><div class="gtz-guide"></div>';
     document.body.appendChild(root);
     builtKey = '';
     S = null;
@@ -448,6 +449,7 @@
    * ------------------------------------------------------------------ */
 
   const DAY_RE = /^(\d{1,2})(?:\s+\p{L}[\p{L}.]*)?$/u;
+  let calib = null; // { dy, spacing }: where Google's hour lines sit relative to the label text centres, measured from the red now-line
   let tzCheck = null; // { home, status: 'match'|'mismatch', diffMin, at } from the red now-line
 
   const addDays = (dt, n) => {
@@ -754,6 +756,15 @@
       let diff = (((googleHours * 60 - homeMin) % 1440) + 1440) % 1440;
       if (diff > 720) diff -= 1440;
       tzCheck = { home: homeNow, status: Math.abs(diff) < 22 ? 'match' : 'mismatch', diffMin: Math.round(diff / 15) * 15, at: Date.now() };
+      // The red line is on the true time axis, and so are the grid's hour lines. Google centres its labels a
+      // little off those lines, so the difference between "where the red line is" and "where the clock says it
+      // should be, going by the label positions" is that offset. Google moves its line once a minute, so use
+      // the middle of the current minute.
+      if (Math.abs(diff) < 22) {
+        let d = (((googleHours * 60 - (p.hour * 60 + p.minute + 0.5)) % 1440) + 1440) % 1440;
+        if (d > 720) d -= 1440;
+        calib = { dy: Math.round(((d / 60) * S.spacing) * 2) / 2, spacing: S.spacing };
+      }
     }
 
     // Marker lines sit on the left edge of the first day that has the new offset.
@@ -791,7 +802,7 @@
     S.geo = geo;
     S.moved = true;
     S.cy = cy;
-    S.geom = { freeLeft, gutterRight, top: band.top, bottom: band.bottom };
+    S.geom = { freeLeft, gutterRight, right: mRect.right, top: band.top, bottom: band.bottom };
 
     S.headEls.forEach((h, c) => {
       h.style.left = `${freeLeft + c * COL_W}px`;
@@ -827,6 +838,9 @@
         st.visibility = S.vis[i] ? '' : 'hidden';
       }
     }
+
+    if (ptr) applyHover(); // rows moved under a resting pointer (scroll, resize)
+    placeGuide();
 
     if (!S.shown) {
       S.shown = true;
@@ -926,11 +940,107 @@
       }
     }
     setHot(bestD <= S.spacing / 2 + 1 ? best : -1);
+    placeGuide(); // also picks up a settings change while hovering
+  }
+
+  // Where Google really draws the hour line near y (its labels are only roughly centred on it).
+  // Scans the grid's elements by position, because the lines usually ignore the mouse and so never show
+  // up in hit-testing. Matches thin elements, wide borders and thin pseudo-elements. Returns the top
+  // edge of the line, or null when none is found (placeGuide then falls back to a calibrated offset).
+  function gridLineNear(y) {
+    const WIN = 8;
+    let best = null;
+    const colored = (c) => c && c !== 'transparent' && !/rgba\([^)]*,\s*0\)$/.test(c);
+    // Google's red now-line is a thin wide element too: never mistake it for an hour line.
+    const nowLine = findNowLine(S.main);
+    const nowR = nowLine ? nowLine.getBoundingClientRect() : null;
+    const nowY = nowR ? nowR.top + nowR.height / 2 : null;
+    const consider = (cand) => {
+      if (cand == null || Math.abs(cand - y) > WIN) return;
+      if (nowY != null && Math.abs(cand + 0.5 - nowY) <= 2.5) return; // the now-line or its grey companion
+      if (best == null || Math.abs(cand - y) < Math.abs(best - y)) best = cand;
+    };
+    for (const e of S.main.querySelectorAll('*')) {
+      const r = e.getBoundingClientRect();
+      if (r.width < 16 || r.bottom < y - WIN || r.top > y + WIN) continue;
+      if (r.height <= 2.5) consider(r.top);
+      const cs = getComputedStyle(e);
+      if (r.width >= 120) {
+        const bt = parseFloat(cs.borderTopWidth);
+        const bb = parseFloat(cs.borderBottomWidth);
+        if (bt >= 1 && colored(cs.borderTopColor)) consider(r.top);
+        if (bb >= 1 && colored(cs.borderBottomColor)) consider(r.bottom - bb);
+      }
+      // Lines drawn as ::before/::after, on any element (they often hang off a narrow label cell).
+      for (const which of ['::before', '::after']) {
+        const p = getComputedStyle(e, which);
+        if (!p || p.content === 'none' || p.content === 'normal') continue;
+        if (p.position !== 'absolute' && p.position !== 'fixed') continue;
+        const h = parseFloat(p.height) + (parseFloat(p.borderTopWidth) || 0) + (parseFloat(p.borderBottomWidth) || 0);
+        if (!(h > 0 && h <= 2.5) || !(parseFloat(p.width) >= 16)) continue;
+        const top = parseFloat(p.top);
+        const bot = parseFloat(p.bottom);
+        if (!isNaN(top)) consider(r.top + e.clientTop + top);
+        else if (!isNaN(bot)) consider(r.bottom - e.clientTop - bot - h);
+      }
+    }
+    return best;
+  }
+
+  // Offset from a label's centre to the top edge of its hour cell (the element about one hour tall that holds it).
+  function hourCellDy(i) {
+    for (let e = S.items[i].el; e && e !== S.main && e !== document.body; e = e.parentElement) {
+      const r = e.getBoundingClientRect();
+      if (r.height > S.spacing + 1.5) break;
+      if (Math.abs(r.height - S.spacing) <= 1.5 && r.width < 200) return r.top - S.cy[i];
+    }
+    return null;
+  }
+
+  // Right end of the grid's visible area: the scroller's inner edge, so the line stops before its scrollbar.
+  function gridRightEdge(y, g) {
+    const x = (g.gutterRight + g.right) / 2;
+    for (let e = document.elementsFromPoint(x, y)[0]; e && e !== document.body; e = e.parentElement) {
+      if (root && root.contains(e)) continue;
+      if (e.offsetWidth - e.clientWidth < 2) continue; // no vertical scrollbar here
+      if (!/(auto|scroll)/.test(getComputedStyle(e).overflowY)) continue;
+      return e.getBoundingClientRect().left + e.clientLeft + e.clientWidth;
+    }
+    return g.right;
+  }
+
+  // A line across the calendar grid at the hovered hour, drawn exactly on Google's own line.
+  function placeGuide() {
+    const g = root && root.querySelector('.gtz-guide');
+    if (!g || !S || !S.geom) return;
+    const i = S.hot;
+    if (settings.rowGuide === false || i < 0 || !S.vis[i]) {
+      g.classList.remove('gtz-show');
+      return;
+    }
+    const geom = S.geom;
+    const key = `${i}|${Math.round(S.spacing * 2)}|${Math.round(geom.right)}`;
+    if (S.guideKey !== key) {
+      S.guideKey = key;
+      const top = gridLineNear(S.cy[i]); // Google's own line, when it can be found exactly
+      S.guideFound = top == null ? null : top + 0.5 - S.cy[i];
+      S.guideCell = hourCellDy(i);
+      S.guideRight = Math.min(geom.right, gridRightEdge(S.cy[i], geom));
+    }
+    // Centre of Google's hour line: found directly, else measured from the red now-line,
+    // else the top edge of the label's hour cell, else the label centre.
+    const dy = S.guideFound != null ? S.guideFound : calib && Math.abs(calib.spacing - S.spacing) < 1.5 ? calib.dy : S.guideCell != null ? S.guideCell : 0;
+    // 2px, centred on the line, so it covers Google's 1px line whichever pixel row it landed on.
+    g.style.left = `${geom.gutterRight}px`;
+    g.style.width = `${Math.max(0, (S.guideRight || geom.right) - geom.gutterRight)}px`;
+    g.style.top = `${Math.round(S.cy[i] + dy - 1)}px`;
+    g.classList.add('gtz-show');
   }
 
   function setHot(idx) {
     if (!S || S.hot === idx) return;
     S.hot = idx;
+    placeGuide();
     if (root) root.classList.toggle('gtz-hovering', idx >= 0);
     S.rows.forEach((cells, i) => cells.forEach((c) => c.classList.toggle('gtz-hot', i === idx)));
     // Google's own column (the calendar timezone) takes part too.

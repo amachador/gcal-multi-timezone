@@ -59,6 +59,18 @@
   color: var(--gtz-hot, #fff);
 }
 
+.gtz-guide {
+  position: absolute;
+  height: 2px;
+  background: var(--gtz-hot, #fff);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.gtz-guide.gtz-show {
+  opacity: 0.5;
+}
+
 .gtz-head {
   position: absolute;
   height: 20px;

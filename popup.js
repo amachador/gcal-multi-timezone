@@ -2,6 +2,7 @@ const DEFAULTS = {
   enabled: true,
   hour12: false,
   dstHints: true,
+  rowGuide: true,
   home: 'auto',
   zones: [
     { tz: 'America/Los_Angeles', label: '' },
@@ -208,6 +209,7 @@ function init() {
   $('enabled').checked = settings.enabled;
   $('hour24').checked = !settings.hour12;
   $('dst').checked = settings.dstHints !== false;
+  $('guide').checked = settings.rowGuide !== false;
   renderHomeSelect();
   renderZones();
   checkCalendarTz();
@@ -223,6 +225,10 @@ function init() {
   });
   $('dst').addEventListener('change', (e) => {
     settings.dstHints = e.target.checked;
+    save();
+  });
+  $('guide').addEventListener('change', (e) => {
+    settings.rowGuide = e.target.checked;
     save();
   });
   $('home').addEventListener('change', (e) => {
