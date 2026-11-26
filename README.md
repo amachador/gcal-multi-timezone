@@ -99,3 +99,8 @@ listing text, permission justifications and privacy disclosures to paste into th
   (serve the folder with `python3 -m http.server` and open `/test/mock2.html`).
 - `make_icons.py` regenerates `icons/icon{16,32,48,128}.png` from `icons/source.svg` (macOS only: it uses
   Quick Look and `sips`, rendering on black and on white to recover true transparency).
+
+## License
+
+The code is released under the [MIT License](LICENSE). The extension icon (`icons/`) is derived from the Google
+Calendar logo, which belongs to Google and is not covered by that license.
