@@ -77,9 +77,10 @@ the extra columns at exactly those positions. The calendar is shifted with a CSS
 
 ## Troubleshooting
 
-If something is misaligned after a Google Calendar update, open the popup on a Calendar tab and click
-**Copy diagnostics**. It copies page structure and positions only (no event data), which makes the
-detection in `content.js` (`findLabels`, `findTzCaption`, `findDayHeaders`) easy to adjust.
+If the columns look misaligned after a Google Calendar update, the detection lives in `content.js`
+(`findLabels`, `findTzCaption`, `findDayHeaders`). It works from the page's content rather than Google's class
+names, so it usually survives redesigns, but those three functions are where to look. `test/demo.html` is a
+quick way to check the behaviour without a real calendar.
 
 ## Publishing to the Chrome Web Store
 

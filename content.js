@@ -314,8 +314,6 @@
     return top;
   }
 
-  let captionCandidates = [];
-
   // Is this text actually painted where we measured it (not transparent, hidden, clipped or covered)?
   function reallyVisible(node, r) {
     const elm = node.parentElement;
@@ -348,7 +346,6 @@
       if (r.bottom > gridTop + 2 || r.top < gridTop - 400 || r.top < 0) continue;
       cands.push({ node, rect: r, visible: reallyVisible(node, r) });
     }
-    captionCandidates = cands.map((c) => ({ text: c.node.nodeValue.trim(), top: Math.round(c.rect.top), h: Math.round(c.rect.height), visible: c.visible }));
     const pool = cands.some((c) => c.visible) ? cands.filter((c) => c.visible) : cands;
     let best = null;
     for (const c of pool) if (!best || c.rect.bottom > best.rect.bottom) best = c;
@@ -451,7 +448,6 @@
    * ------------------------------------------------------------------ */
 
   const DAY_RE = /^(\d{1,2})(?:\s+\p{L}[\p{L}.]*)?$/u;
-  let lastDays = null; // for diagnostics
   let tzCheck = null; // { home, status: 'match'|'mismatch', diffMin, at } from the red now-line
 
   const addDays = (dt, n) => {
@@ -586,7 +582,6 @@
     const start = dayHdr ? firstVisibleDate(dayHdr, urlDate) : null;
     const date = start || urlDate; // labels use the first visible day's offsets
     const changes = start && settings.dstHints !== false ? dstChanges(zones, home, start, dayHdr.length) : [];
-    lastDays = { nums: dayHdr ? dayHdr.map((d) => d.day) : null, start: start || null, changes };
     const labelStyle = getComputedStyle(found.items[0].el);
     const bg = opaqueBackground(found.items[0].el); // null when the page paints none
     const tzNode = findTzCaption(found, gridTop);
@@ -968,60 +963,14 @@
   });
 
   /* ------------------------------------------------------------------ *
-   * Diagnostics (popup -> "Copy diagnostics"): structure only, no event data
+   * Popup status: does Google Calendar's clock match the timezone we assume?
    * ------------------------------------------------------------------ */
-
-  function describe(n) {
-    const r = n.getBoundingClientRect();
-    const cs = getComputedStyle(n);
-    return {
-      tag: n.tagName.toLowerCase(),
-      role: n.getAttribute('role'),
-      cls: String(n.className || '').slice(0, 60),
-      overflow: `${cs.overflowX}/${cs.overflowY}`,
-      rect: [r.left, r.top, r.width, r.height].map(Math.round),
-      scroll: [n.scrollTop, n.scrollHeight, n.clientHeight],
-    };
-  }
-
-  function diagnostics() {
-    const main = document.querySelector('[role="main"]');
-    const out = { version: 3, url: location.pathname.replace(/\d{4}\/\d+\/\d+/, 'Y/M/D'), viewport: [innerWidth, innerHeight], settings: { zones: (settings.zones || []).map((z) => z.tz), hour12: settings.hour12, home: settings.home } };
-    out.main = main ? describe(main) : null;
-    out.active = !!S;
-    if (S) {
-      out.cols = S.W;
-      out.items = S.items.length;
-      out.cy = S.cy.slice(0, 3).concat(S.cy.slice(-1)).map(Math.round);
-      out.band = S.geom ? [S.geom.top, S.geom.bottom].map(Math.round) : null;
-      out.visibleRows = S.vis.filter(Boolean).length;
-      out.clip = S.clip.slice(0, 6).map(describe);
-      out.firstLabel = describe(S.items[0].el);
-      out.dstHints = settings.dstHints !== false;
-      out.tzCheck = tzCheck;
-      out.captionCandidates = captionCandidates;
-      out.days = lastDays;
-      out.caption = S.tzNode ? { text: S.tzNode.nodeValue.trim(), ...describe(S.tzNode.parentElement) } : null;
-      out.nowLine = nowEl && nowEl.isConnected ? describe(nowEl) : null;
-      const cell = S.rows[0] && S.rows[0][0];
-      out.firstCell = cell ? { top: cell.style.top, left: cell.style.left, vis: cell.style.visibility || 'visible' } : null;
-    }
-    return out;
-  }
 
   try {
     chrome.runtime.onMessage.addListener((msg, sender, reply) => {
       if (msg && msg.type === 'gtz-status') {
         const home = homeTz();
         reply({ home, tzCheck: tzCheck && tzCheck.home === home ? tzCheck : null });
-        return;
-      }
-      if (msg && msg.type === 'gtz-diagnostics') {
-        try {
-          reply(diagnostics());
-        } catch (e) {
-          reply({ error: String(e) });
-        }
       }
     });
   } catch (e) {

@@ -242,17 +242,6 @@ function init() {
     renderZones();
   });
 
-  $('diag').addEventListener('click', async () => {
-    const msg = $('diag-msg');
-    try {
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      const info = await chrome.tabs.sendMessage(tab.id, { type: 'gtz-diagnostics' });
-      await navigator.clipboard.writeText(JSON.stringify(info, null, 1));
-      msg.textContent = 'Copied. Paste it into the chat.';
-    } catch (e) {
-      msg.textContent = 'Open a Google Calendar tab (and reload it) first.';
-    }
-  });
 
   setInterval(renderZones, 30000);
 }
