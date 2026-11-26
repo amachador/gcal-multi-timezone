@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Multi Timezone for Google Calendar",
+  "version": "1.0.0",
+  "description": "Show several timezones next to the Google Calendar time grid, laid out like Notion Calendar.",
+  "permissions": ["storage"],
+  "action": {
+    "default_title": "Timezones",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://calendar.google.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

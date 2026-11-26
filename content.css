@@ -1,0 +1,143 @@
+#gtz-root {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 50;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+#gtz-root.gtz-ready {
+  opacity: 1;
+}
+
+#gtz-root,
+#gtz-root * {
+  box-sizing: border-box;
+}
+
+.gtz-clip {
+  position: absolute;
+  overflow: hidden;
+}
+
+.gtz-content {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  will-change: transform;
+}
+
+.gtz-cell {
+  position: absolute;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 16px;
+  height: 16px;
+  margin-top: -8px;
+  color: var(--gtz-color, #70757a);
+  font-family: var(--gtz-font, inherit);
+  font-size: var(--gtz-size, 10px);
+  font-weight: var(--gtz-weight, 500);
+  letter-spacing: var(--gtz-spacing, 0.3px);
+  font-variant-numeric: tabular-nums;
+  transition: opacity 0.12s ease, color 0.12s ease;
+}
+
+.gtz-hovering .gtz-cell {
+  opacity: 0.32;
+}
+
+.gtz-hovering .gtz-cell.gtz-hot {
+  opacity: 1;
+  color: var(--gtz-hot, #fff);
+}
+
+.gtz-head {
+  position: absolute;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--gtz-color, #70757a);
+  font-family: var(--gtz-font, inherit);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+}
+
+.gtz-cover {
+  position: absolute;
+  height: 20px;
+  background: var(--gtz-head-bg, transparent);
+}
+
+.gtz-pill {
+  position: absolute;
+  height: 18px;
+  margin-top: -9px;
+  padding: 0 6px;
+  border-radius: 5px;
+  background: #e5504a;
+  color: #fff;
+  font-family: var(--gtz-font, inherit);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 18px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 0 2px var(--gtz-bg, transparent);
+}
+
+/* Make room for the extra columns. Keyed on <html> so that a freshly rendered
+   [role="main"] is shifted from its first paint. */
+html.gtz-on [role="main"] {
+  margin-left: var(--gtz-w, 0px) !important;
+  max-width: calc(100% - var(--gtz-w, 0px)) !important;
+}
+
+html.gtz-animate [role="main"] {
+  transition: margin-left 0.3s ease, max-width 0.3s ease !important;
+}
+
+/* Daylight-saving hint */
+.gtz-head.gtz-dst {
+  color: var(--gtz-warn, #fdd663);
+}
+
+.gtz-dst-line {
+  position: absolute;
+  width: 0;
+  border-left: 2px dashed var(--gtz-warn, #fdd663);
+}
+
+.gtz-dst-chip {
+  position: absolute;
+  transform: translateX(-100%);
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: var(--gtz-warn-bg, rgba(251, 188, 4, 0.18));
+  color: var(--gtz-warn, #fdd663);
+  font-family: var(--gtz-font, inherit);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.gtz-dst-eyebrow {
+  margin-bottom: 1px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
